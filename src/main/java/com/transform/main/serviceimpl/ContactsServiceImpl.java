@@ -13,16 +13,12 @@ import java.util.Optional;
 @Service
 public class ContactsServiceImpl implements ContactsService {
 
-    private ContactsRepository contactsRepository;
+    private final ContactsRepository contactsRepository;
 
     @Autowired
     public ContactsServiceImpl(ContactsRepository contactsRepository) {
         this.contactsRepository = contactsRepository;
     }
-
-    public ContactsServiceImpl() {
-    }
-
 
     @Override
     public Contacts findById(Integer id) {
@@ -35,7 +31,7 @@ public class ContactsServiceImpl implements ContactsService {
         }
         else {
             // we didn't find the employee
-            throw new RuntimeException("Did not find employee id - " + id);
+            throw new RuntimeException("Did not find contact id - " + id);
         }
 
         return contact;

@@ -1,8 +1,5 @@
 package com.transform.main.security;
 
-import com.transform.main.dao.ContactsRepository;
-import com.transform.main.service.ContactsService;
-import com.transform.main.serviceimpl.ContactsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -34,10 +31,16 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers(HttpMethod.POST, "/api/register").hasRole("GENERIC")
-                        .requestMatchers(HttpMethod.POST, "/api/login").hasRole("GENERIC")
-
+                        .requestMatchers(HttpMethod.GET, "/access/user").hasRole("GENERIC")
+                        .requestMatchers(HttpMethod.GET, "/access/login/**").hasRole("GENERIC")
+                        .requestMatchers(HttpMethod.POST, "/access/register").hasRole("GENERIC")
+                        .requestMatchers(HttpMethod.POST, "/access/login").hasRole("GENERIC")
+                        .requestMatchers(HttpMethod.POST, "/contact/activity").hasRole("GENERIC")
+                        .requestMatchers(HttpMethod.GET, "/contact/activity/**").hasRole("GENERIC")
+                        .requestMatchers(HttpMethod.GET, "/contact/activity").hasRole("GENERIC")
         );
+
+//        http.authorizeHttpRequests(configurer -> configurer.anyRequest().authenticated());
 
         // use HTTP Basic Authentication
         http.httpBasic(Customizer.withDefaults());

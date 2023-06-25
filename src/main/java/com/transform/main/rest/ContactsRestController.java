@@ -11,13 +11,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/access")
 public class ContactsRestController {
 
     private final ContactsService contactsService;
@@ -88,9 +89,52 @@ public class ContactsRestController {
             }
 
         } catch (Exception e) {
-            ApiResponse response = new ApiResponse(false, "Login failed", null);
+            ApiResponse response = new ApiResponse(false, "Login failed " + e, null);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    @GetMapping("/login/user")
+    public ResponseEntity<ContactsModel> getContact(@RequestParam(value = "username", required = false) String accessName,
+                                               @RequestParam(value = "useremail", required = false) String accessEmail,
+                                               @RequestParam(value = "userid", required = false) Integer contactsId) {
+        try {
+            Contacts contact = new Contacts();
+            if (contactsId != null) {
+                contact = contactsService.findById(contactsId);
+            } else {
+                if (accessName != null) {
+                    contact = contactsService.findByAccessName(accessName);
+                } else if (accessEmail != null) {
+                    contact = contactsService.findByAccessEmail(accessEmail);
+                }
+            }
+            ContactsModel contactsModel = populateContactModel(contact);
+            return ResponseEntity.ok(contactsModel);
+        } catch (Exception e) {
+            ContactsModel response = new ContactsModel();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<List<ContactsModel>> listContact() {
+        List<ContactsModel> contactsModels = new ArrayList<>();
+        try {
+            List<Contacts> contacts = contactsService.findAll();
+
+            if (!CollectionUtils.isEmpty(contacts)) {
+                contacts.stream().forEach(contact -> {
+                    contactsModels.add(populateContactModel(contact));
+                });
+
+                return ResponseEntity.ok(contactsModels);
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(contactsModels);
+        }
+        return null;
     }
 
     private Contacts populateContacts(ContactsModel contactsModel) {
@@ -111,5 +155,22 @@ public class ContactsRestController {
 
     }
 
+    private ContactsModel populateContactModel(Contacts contact) {
+        ContactsModel contactsModel = new ContactsModel();
+
+        if (contact.getContactId() != null) contactsModel.setContactId(contact.getContactId());
+        contactsModel.setAccessName(contact.getAccessName());
+        contactsModel.setFirstName(contact.getFirstName());
+        contactsModel.setLastName(contact.getLastName());
+        contactsModel.setAccessEmail(contact.getAccessEmail());
+        contactsModel.setPassword(contact.getPassword());
+        contactsModel.setMobile(contact.getMobile());
+        contactsModel.setProblemDescription(contact.getProblemDescription());
+        contactsModel.setActive(contact.getActive());
+        contactsModel.setEmailVerified(contact.getEmailVerified());
+
+        return contactsModel;
+
+    }
 
 }

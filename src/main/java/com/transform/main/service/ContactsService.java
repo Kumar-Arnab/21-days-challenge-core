@@ -1,8 +1,6 @@
 package com.transform.main.service;
 
 import com.transform.main.entity.Contacts;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 

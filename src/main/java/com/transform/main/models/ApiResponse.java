@@ -6,12 +6,12 @@ public class ApiResponse {
 
     private String message;
 
-    private Integer id;
+    private Integer responseId;
 
-    public ApiResponse(Boolean response, String message, Integer id) {
+    public ApiResponse(Boolean response, String message, Integer responseId) {
         this.response = response;
         this.message = message;
-        this.id = id;
+        this.responseId = responseId;
     }
 
     public Boolean getResponse() {
@@ -30,11 +30,11 @@ public class ApiResponse {
         this.message = message;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getResponseId() {
+        return responseId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setResponseId(Integer responseId) {
+        this.responseId = responseId;
     }
 }
